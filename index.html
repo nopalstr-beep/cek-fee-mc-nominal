@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment | Nopal Store</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#0f172a;color:#e5e7eb;display:flex;justify-content:center;align-items:center;min-height:100vh}
+    .card{background:#020617;padding:20px;border-radius:14px;width:100%;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+    h1{text-align:center;margin-bottom:6px}
+    p{text-align:center;font-size:13px;color:#94a3b8}
+    label{display:block;margin-top:14px;font-size:14px}
+    input,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:none;font-size:15px}
+    button{width:100%;margin-top:18px;padding:12px;background:#22c55e;color:#020617;border:none;border-radius:10px;font-size:16px;cursor:pointer}
+    .result{margin-top:18px;border:1px solid #1e293b;padding:14px;border-radius:10px;font-size:14px}
+    .highlight{color:#22c55e;font-weight:bold}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="text-align:center;margin-bottom:14px">
+      <img src="https://files.catbox.moe/q59f9e.jpg" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid #22c55e;box-shadow:0 0 20px rgba(34,197,94,.35)" />
+    </div>
+    <div style="background:#020617;border:1px solid #1e293b;border-radius:14px;padding:12px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+  <img src="https://files.catbox.moe/2ym485.jpg" style="width:42px;height:42px;border-radius:50%;object-fit:cover" />
+  <div style="font-size:13px;color:#cbd5f5">
+    Mampir all tentang JB gw<br>
+    <a href="https://linktr.ee/linkgw" target="_blank" style="color:#38bdf8;text-decoration:none;font-weight:bold">linktr.ee/linkgw</a>
+  </div>
+</div>
+<h1>PAYMENT NOPAL STORE</h1>
+    <p>Payment only <b>DANA</b> & <b>QRIS</b></p><label>Nominal Transaksi Mc/Rekber (Rp)</label>
+<input type="text" id="nominal" placeholder="Masukkin Nominal Mc Lu" oninput="formatNominal(this)" />
+
+<label>Metode Pembayaran</label>
+<select id="payment">
+  <option>DANA</option>
+  <option>QRIS</option>
+</select>
+
+<button onclick="hitung()">Hitung Fee</button>
+
+<div class="result" id="hasil" style="display:none"></div>
+<div class="result" id="payInfo" style="display:none"></div>
+
+  </div><script>
+function copyDana(){
+  const text = '085198321080';
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('Nomor DANA berhasil dicopy');
+  });
+}
+
+function openQRIS(src){
+  const w = window.open();
+  w.document.write(`<img src="${src}" style="width:100%">`);
+}
+
+// format input jadi 150.000
+function formatNominal(el){
+  let value = el.value.replace(/\D/g,'');
+  if(value === ''){
+    el.value = '';
+    return;
+  }
+  el.value = Number(value).toLocaleString('id-ID');
+}
+
+function hitungFee(n){
+  if(n<=35000) return 2500;
+  if(n<=125000) return 5000;
+  if(n<=226000) return 10000;
+  if(n<=327000) return 16500;
+  if(n<=428000) return 23000;
+  if(n<=529000) return 29500;
+  if(n<=630000) return 36000;
+  if(n<=731000) return 42500;
+  if(n<=832000) return 49000;
+  if(n<=933000) return 55500;
+  if(n<=1000000) return 62000;
+  return null;
+}
+
+function hitung(){
+  const raw = document.getElementById('nominal').value.replace(/\./g,'');
+  const nominal = parseInt(raw);
+  const payment = document.getElementById('payment').value;
+  const hasil = document.getElementById('hasil');
+  const payInfo = document.getElementById('payInfo');
+
+  if(!nominal || nominal<=0){
+    alert('Masukkan nominal yang benar');
+    return;
+  }
+
+  const fee = hitungFee(nominal);
+  hasil.style.display='block';
+  payInfo.style.display='block';
+
+  if(fee===null){
+    hasil.innerHTML = 'Nominal <b>di atas 1JT</b><br>Silakan <b>chat admin</b> untuk fee.';
+    payInfo.style.display='none';
+    return;
+  }
+
+  const total = nominal + fee;
+
+  hasil.innerHTML = `
+    Metode: <b>${payment}</b><br>
+    Nominal: <b>Rp ${nominal.toLocaleString('id-ID')}</b><br>
+    Fee MC/Rekber: <span class="highlight">Rp ${fee.toLocaleString('id-ID')}</span><hr>
+    Total Transfer ke Admin:<br>
+    <span class="highlight" style="font-size:18px">Rp ${total.toLocaleString('id-ID')}</span>
+  `;
+
+  if(payment === 'DANA'){
+    payInfo.innerHTML = `
+      <b>Pembayaran via DANA</b><br>
+      Nomor DANA:<br>
+      <span class="highlight" style="cursor:pointer" onclick="copyDana()">085198321080</span><br><span style="font-size:12px;color:#94a3b8">(klik nomor untuk copy)</span>
+    `;
+  } else {
+    payInfo.innerHTML = `
+      <b>Pembayaran via QRIS</b><br>
+      <span style="font-size:13px;color:#fbbf24">TEKAN QRIS LALU PENCET DOWNLOAD UNTUK MENYIMPAN QRIS</span><br><br>
+      <img src="https://files.catbox.moe/or31xn.jpg" onclick="openQRIS(this.src)" style="width:100%;border-radius:12px;cursor:pointer" />
+    `;
+  }
+}
+</script></body>
+</html>
